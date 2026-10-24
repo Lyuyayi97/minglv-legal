@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+.env*
+!.env.example
+data/legal.sqlite
+data/legal.sqlite-shm
+data/legal.sqlite-wal
+data/chinese-law-corpus.zip
+data/corpus/
+test-results/
+playwright-report/
+deliverables/
+*.tsbuildinfo
+*.log

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="6" fill="#f8fbfd"/>
+  <rect x="9" y="9" width="46" height="46" rx="3" fill="none" stroke="#165d8d" stroke-width="3"/>
+  <text x="32" y="44" fill="#165d8d" font-family="SimSun, serif" font-size="33" font-weight="700" text-anchor="middle">明</text>
+</svg>

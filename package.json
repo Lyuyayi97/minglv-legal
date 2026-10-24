@@ -1,0 +1,33 @@
+{
+  "name": "legal-research-workbench",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.25.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "data:build": "node scripts/build-db.mjs",
+    "data:sync": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/sync-laws.ps1",
+    "data:pack": "node scripts/pack-db.mjs",
+    "data:prepare": "node scripts/prepare-db.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "netlify:package": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-netlify.ps1"
+  },
+  "dependencies": {
+    "lucide-react": "1.61.0",
+    "next": "16.4.3",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@netlify/plugin-nextjs": "^5.16.4",
+    "@types/node": "26.6.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "playwright-core": "^1.64.1",
+    "typescript": "7.0.2"
+  }
+}
