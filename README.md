@@ -45,6 +45,41 @@ LEGAL_LLM_MODEL=your-model
 配置读取与接口适配位于 `src/server/config.ts`。`.env.local` 已被
 `.gitignore` 排除，不会提交到版本库。
 
+## 临时内置 API Key 的 Netlify 部署包
+
+临时部署可以让模型配置随服务端代码打包，不依赖 Netlify 环境变量。不要把
+生成的临时包或 `.env.local` 上传到 GitHub。
+
+1. 编辑项目根目录的 `.env.local`：
+
+```dotenv
+LEGAL_LLM_BASE_URL=https://api.deepseek.com/v1
+LEGAL_LLM_API_KEY=新的有效Key
+LEGAL_LLM_MODEL=deepseek-chat
+```
+
+2. 生成临时包：
+
+```powershell
+pnpm netlify:package:temp
+```
+
+3. 输出文件：
+
+```text
+deliverables/minglv-netlify-temp.zip
+```
+
+4. 解压后进入目录并使用 Netlify CLI 部署：
+
+```powershell
+npx netlify deploy --build --prod
+```
+
+临时包通过 `src/server/embedded-config.ts` 的构建副本携带 Key，Key 只存在于
+服务端函数中，不会进入浏览器前端；原始 `src/server/embedded-config.ts` 在
+Git 仓库中保持空白。临时使用结束后应删除 ZIP，并在 API 服务商后台轮换 Key。
+
 ## 部署到 Netlify
 
 项目已包含 `netlify.toml`、Netlify Next.js 运行时插件和数据库文件追踪配置。

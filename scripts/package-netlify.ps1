@@ -1,9 +1,14 @@
+param(
+  [switch]$EmbedModelKey
+)
+
 $ErrorActionPreference = "Stop"
 
 $root = Split-Path -Parent $PSScriptRoot
 $deliverables = Join-Path $root "deliverables"
 $stage = Join-Path $deliverables ".stage"
-$archive = Join-Path $deliverables "minglv-netlify.zip"
+$archiveName = if ($EmbedModelKey) { "minglv-netlify-temp.zip" } else { "minglv-netlify.zip" }
+$archive = Join-Path $deliverables $archiveName
 $database = Join-Path $root "data\legal.sqlite"
 
 if (-not (Test-Path -LiteralPath $database)) {
@@ -54,6 +59,45 @@ foreach ($file in $files) {
   if (Test-Path -LiteralPath $source) {
     Copy-Item -LiteralPath $source -Destination $stage -Force
   }
+}
+
+if ($EmbedModelKey) {
+  $envPath = Join-Path $root ".env.local"
+  if (-not (Test-Path -LiteralPath $envPath)) {
+    throw ".env.local is required for a temporary embedded-key package."
+  }
+
+  $config = @{}
+  foreach ($line in Get-Content -LiteralPath $envPath) {
+    if ($line -match "^\s*([^#][^=]*)=(.*)$") {
+      $config[$matches[1].Trim()] = $matches[2].Trim()
+    }
+  }
+
+  $baseUrl = [string]$config["LEGAL_LLM_BASE_URL"]
+  $apiKey = [string]$config["LEGAL_LLM_API_KEY"]
+  $model = [string]$config["LEGAL_LLM_MODEL"]
+
+  if (-not $baseUrl -or -not $apiKey -or -not $model) {
+    throw "LEGAL_LLM_BASE_URL, LEGAL_LLM_API_KEY and LEGAL_LLM_MODEL must all be set in .env.local."
+  }
+
+  $embeddedPath = Join-Path $stage "src\server\embedded-config.ts"
+  $escapedBaseUrl = $baseUrl.Replace("\", "\\").Replace('"', '\"')
+  $escapedApiKey = $apiKey.Replace("\", "\\").Replace('"', '\"')
+  $escapedModel = $model.Replace("\", "\\").Replace('"', '\"')
+  $embeddedContent = @"
+export const EMBEDDED_MODEL_CONFIG = {
+  baseUrl: "$escapedBaseUrl",
+  apiKey: "$escapedApiKey",
+  model: "$escapedModel",
+} as const;
+"@
+  [System.IO.File]::WriteAllText(
+    $embeddedPath,
+    $embeddedContent,
+    (New-Object System.Text.UTF8Encoding($false))
+  )
 }
 
 $stageData = Join-Path $stage "data"
@@ -109,5 +153,8 @@ try {
 }
 
 Write-Host "Netlify package: $($item.FullName)"
+if ($EmbedModelKey) {
+  Write-Host "Temporary server-side model credentials were embedded. Revoke the key after use."
+}
 Write-Host "Size: $([Math]::Round($item.Length / 1MB, 2)) MB"
 Write-Host "SHA256: $hash"

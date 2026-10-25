@@ -313,6 +313,33 @@ const LEGAL_DOMAINS: LegalDomain[] = [
     preferredLawTerms: ["民法典", "民间借贷", "担保"],
     negativeLawTerms: ["融资租赁", "房屋租赁"],
   },
+  {
+    id: "reputation",
+    label: "名誉与人格权",
+    triggers: [
+      "羞辱",
+      "侮辱",
+      "诽谤",
+      "辱骂",
+      "骂我",
+      "造谣",
+      "名誉",
+      "人格尊严",
+      "犯了什么罪",
+    ],
+    sourceTerms: [
+      "侮辱",
+      "诽谤",
+      "名誉",
+      "人格尊严",
+      "公然",
+      "捏造事实",
+      "治安管理处罚",
+      "刑法",
+    ],
+    preferredLawTerms: ["刑法", "治安管理处罚", "民法典"],
+    negativeLawTerms: ["融资租赁", "房屋租赁", "劳动合同"],
+  },
 ];
 
 export function detectLegalDomain(question: string): LegalDomain | null {

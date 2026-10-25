@@ -37,3 +37,10 @@ test("distinguishes rental questions from labor questions", () => {
     "labor",
   );
 });
+
+test("detects reputation and insult questions", () => {
+  assert.equal(
+    detectLegalDomain("有人公开羞辱我，犯了什么罪？")?.id,
+    "reputation",
+  );
+});
